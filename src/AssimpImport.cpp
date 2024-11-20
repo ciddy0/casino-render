@@ -10,7 +10,7 @@ const size_t FLOATS_PER_VERTEX = 3;
 const size_t VERTICES_PER_FACE = 3;
 
 std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, const std::string& typeName, const std::filesystem::path& modelPath,
-	std::unordered_map<std::filesystem::path, Texture>& loadedTextures) {
+	std::unordered_map<std::string, Texture>& loadedTextures) {
 	std::vector<Texture> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
@@ -19,7 +19,7 @@ std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, c
 		std::filesystem::path texPath = modelPath.parent_path() / name.C_Str();
 		std::cout << "loading " << texPath << std::endl;
 
-		auto existing = loadedTextures.find(texPath);
+		auto existing = loadedTextures.find(texPath.string());
 		if (existing != loadedTextures.end()) {
 			textures.push_back(existing->second);
 		}
@@ -28,14 +28,14 @@ std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, c
 			image.loadFromFile(texPath.string());
 			Texture tex = Texture::loadImage(image, typeName);
 			textures.push_back(tex);
-			loadedTextures.insert(std::make_pair(texPath, tex));
+			loadedTextures.insert(std::make_pair(texPath.string(), tex));
 		}
 	}
 	return textures;
 }
 
 Mesh3D fromAssimpMesh(const aiMesh* mesh, const aiScene* scene, const std::filesystem::path& modelPath,
-	std::unordered_map<std::filesystem::path, Texture>& loadedTextures) {
+	std::unordered_map<std::string, Texture>& loadedTextures) {
 	std::vector<Vertex3D> vertices;
 
 	// TODO: fill in this vertices list, by iterating over each element of 
@@ -111,14 +111,14 @@ Object3D assimpLoad(const std::string& path, bool flipTextureCoords) {
 
 	}
 	std::vector<Mesh3D> meshes;
-	std::unordered_map<std::filesystem::path, Texture> loadedTextures;
+	std::unordered_map<std::string, Texture> loadedTextures;
 	auto ret = processAssimpNode(scene->mRootNode, scene, std::filesystem::path(path), loadedTextures);
 	return ret;
 }
 
 Object3D processAssimpNode(aiNode* node, const aiScene* scene,
 	const std::filesystem::path& modelPath,
-	std::unordered_map<std::filesystem::path, Texture>& loadedTextures) {
+	std::unordered_map<std::string, Texture>& loadedTextures) {
 
 	// Load the aiNode's meshes.
 	std::vector<Mesh3D> meshes;
