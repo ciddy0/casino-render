@@ -175,7 +175,33 @@ Scene lifeOfPi() {
 	return scene;
 }
 
+Scene casino() {
+	Scene scene{ texturingShader() };
 
+	// slot machine
+	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
+	slots.setScale(glm::vec3(1));
+	slots.setPosition(glm::vec3(-1, 0, -3));
+	scene.objects.push_back(std::move(slots));
+	// table
+	auto table = assimpLoad("models/poker_table/scene.gltf", true);
+	table.setScale(glm::vec3(.001));
+	table.setPosition(glm::vec3(0, 0, 0));
+	scene.objects.push_back(std::move(table));
+	// cards and chips
+	auto cardsChips = assimpLoad("models/chips_cards/scene.gltf", true);
+	cardsChips.setScale(glm::vec3(.07));
+	cardsChips.setPosition(glm::vec3(.4, .6, 0));
+	scene.objects.push_back(std::move(cardsChips));
+	// cube
+	auto cube = assimpLoad("models/cube.obj", false);
+	cube.setScale(glm::vec3(.05));
+	cube.move(glm::vec3(0, 1, 0));
+	scene.objects.push_back(std::move(cube));
+
+	return scene;
+
+}
 
 int main() {
 	
@@ -194,10 +220,9 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	// Inintialize scene objects.
-	auto myScene = lifeOfPi();
+	auto myScene = casino();
 	// You can directly access specific objects in the scene using references.
 	auto& firstObject = myScene.objects[0];
-
 	// Activate the shader program.
 	myScene.program.activate();
 
@@ -214,7 +239,7 @@ int main() {
 	}
 
 	while (running) {
-		
+
 		sf::Event ev;
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed) {
@@ -227,8 +252,9 @@ int main() {
 		last = now;
 
 
-		glm::vec3 cameraPos = glm::vec3(0, 0, 5);
-		glm::mat4 camera = glm::lookAt(cameraPos, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+		glm::vec3 cameraPos = glm::vec3(0, 2, 4);
+		glm::vec3 target = glm::vec3(0, 0, 0);
+		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
 		glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);

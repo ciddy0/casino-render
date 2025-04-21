@@ -1,0 +1,11 @@
+Model Information:
+* title:	Slot_machine
+* source:	https://sketchfab.com/3d-models/slot-machine-d58181162e154af2ab73e8667db2e81d
+* author:	morrrtu1o (https://sketchfab.com/morrrtu1o)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Slot_machine" (https://sketchfab.com/3d-models/slot-machine-d58181162e154af2ab73e8667db2e81d) by morrrtu1o (https://sketchfab.com/morrrtu1o) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

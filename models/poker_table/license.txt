@@ -1,0 +1,11 @@
+Model Information:
+* title:	Poker Table
+* source:	https://sketchfab.com/3d-models/poker-table-9f96e4c2fde44b4f8cdb9759e0591f79
+* author:	samt2510 (https://sketchfab.com/samt2510)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Poker Table" (https://sketchfab.com/3d-models/poker-table-9f96e4c2fde44b4f8cdb9759e0591f79) by samt2510 (https://sketchfab.com/samt2510) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
