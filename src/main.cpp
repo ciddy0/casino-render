@@ -174,10 +174,8 @@ Scene lifeOfPi() {
 	// Transfer ownership of the objects and animators back to the main.
 	return scene;
 }
-
-Scene casino() {
+Scene Casino() {
 	Scene scene{ texturingShader() };
-
 	// slot machine
 	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
 	slots.setScale(glm::vec3(1));
@@ -198,6 +196,16 @@ Scene casino() {
 	cube.setScale(glm::vec3(.05));
 	cube.move(glm::vec3(0, 1, 0));
 	scene.objects.push_back(std::move(cube));
+
+	// faking the spoin for now but I neeed to figure out rotational velocity
+	Animator spin;
+	spin.addAnimation(std::make_unique<RotationAnimation>(
+		// every time I add an object make sure to increment XD or else the wrong object will start spinnng ahahhaha
+		scene.objects[3],
+		4,
+		glm::vec3(2*M_PI, 2 * M_PI, 2*M_PI)
+	));
+	scene.animators.push_back(std::move(spin));
 
 	return scene;
 
@@ -220,7 +228,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	// Inintialize scene objects.
-	auto myScene = casino();
+	auto myScene = Casino();
 	// You can directly access specific objects in the scene using references.
 	auto& firstObject = myScene.objects[0];
 	// Activate the shader program.
@@ -252,7 +260,7 @@ int main() {
 		last = now;
 
 
-		glm::vec3 cameraPos = glm::vec3(0, 2, 4);
+		glm::vec3 cameraPos = glm::vec3(0, 2, 3);
 		glm::vec3 target = glm::vec3(0, 0, 0);
 		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
 		glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
