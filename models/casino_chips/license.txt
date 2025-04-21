@@ -1,0 +1,11 @@
+Model Information:
+* title:	Casino Chips free model
+* source:	https://sketchfab.com/3d-models/casino-chips-free-model-10454a847531461b92f142bc92da8957
+* author:	Geug (https://sketchfab.com/Geug)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Casino Chips free model" (https://sketchfab.com/3d-models/casino-chips-free-model-10454a847531461b92f142bc92da8957) by Geug (https://sketchfab.com/Geug) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

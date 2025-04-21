@@ -174,7 +174,14 @@ Scene lifeOfPi() {
 	// Transfer ownership of the objects and animators back to the main.
 	return scene;
 }
-Scene Casino() {
+struct DicePhysics {
+	Object3D* object;
+	glm::vec3 velocity = glm::vec3(0.0f);  // Initial velocity
+	glm::vec3 acceleration = glm::vec3(0.0f, -9.8f, 0.0f); // gravity
+	float bounceCoeff = 0.5f; // 0.5 seems to work to simulate a die bouncing
+};
+
+Scene Casino(std::vector<DicePhysics>& dicePhysics) {
 	Scene scene{ texturingShader() };
 	// slot machine
 	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
@@ -187,15 +194,18 @@ Scene Casino() {
 	table.setPosition(glm::vec3(0, 0, 0));
 	scene.objects.push_back(std::move(table));
 	// cards and chips
-	auto cardsChips = assimpLoad("models/chips_cards/scene.gltf", true);
-	cardsChips.setScale(glm::vec3(.07));
-	cardsChips.setPosition(glm::vec3(.4, .6, 0));
-	scene.objects.push_back(std::move(cardsChips));
+	auto casinoChips = assimpLoad("models/casino_chips/scene.gltf", true);
+	casinoChips.setScale(glm::vec3(1));
+	casinoChips.setPosition(glm::vec3(.4, .6, 0));
+	scene.objects.push_back(std::move(casinoChips));
 	// cube
 	auto cube = assimpLoad("models/cube.obj", false);
 	cube.setScale(glm::vec3(.05));
-	cube.move(glm::vec3(0, 1, 0));
+	cube.move(glm::vec3(0, 2, 0));
 	scene.objects.push_back(std::move(cube));
+
+	// physics to die
+	dicePhysics.push_back({ &scene.objects.back() });
 
 	// faking the spoin for now but I neeed to figure out rotational velocity
 	Animator spin;
@@ -228,7 +238,8 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	// Inintialize scene objects.
-	auto myScene = Casino();
+	std::vector<DicePhysics> dicePhysics;
+	auto myScene = Casino(dicePhysics);
 	// You can directly access specific objects in the scene using references.
 	auto& firstObject = myScene.objects[0];
 	// Activate the shader program.
@@ -272,6 +283,20 @@ int main() {
 		// Update the scene.
 		for (auto& anim : myScene.animators) {
 			anim.tick(diff.asSeconds());
+		}
+		float dt = diff.asSeconds();
+		for (auto& dice : dicePhysics) {
+			dice.velocity += dice.acceleration * dt;
+			glm::vec3 newPos = dice.object->getPosition() + dice.velocity * dt;
+			// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
+			if (newPos.y <= .6f) {
+				newPos.y = .6f;
+				dice.velocity.y *= -dice.bounceCoeff;
+				if (std::abs(dice.velocity.y) < 0.1f) {
+					dice.velocity.y = 0.0f;
+				}
+			}
+			dice.object->setPosition(newPos);
 		}
 
 		// Clear the OpenGL "context".
