@@ -174,9 +174,12 @@ Scene lifeOfPi() {
 	// Transfer ownership of the objects and animators back to the main.
 	return scene;
 }
+
+// since im only adding physics to dice i feel like i dont need to update the object class
 struct DicePhysics {
 	Object3D* object;
 	glm::vec3 velocity = glm::vec3(0.0f);  // Initial velocity
+	glm::vec3 angularVelocity = glm::vec3(0.0f); // rotational speed
 	glm::vec3 acceleration = glm::vec3(0.0f, -9.8f, 0.0f); // gravity
 	float bounceCoeff = 0.5f; // 0.5 seems to work to simulate a die bouncing
 };
@@ -205,18 +208,20 @@ Scene Casino(std::vector<DicePhysics>& dicePhysics) {
 	scene.objects.push_back(std::move(cube));
 
 	// physics to die
-	dicePhysics.push_back({ &scene.objects.back() });
+	DicePhysics dice;
+	dice.object = &scene.objects.back();
+	dice.angularVelocity = glm::vec3(2.0f, 1.5f, 3.0f);
+	dicePhysics.push_back(dice);
 
 	// faking the spoin for now but I neeed to figure out rotational velocity
-	Animator spin;
-	spin.addAnimation(std::make_unique<RotationAnimation>(
-		// every time I add an object make sure to increment XD or else the wrong object will start spinnng ahahhaha
-		scene.objects[3],
-		4,
-		glm::vec3(2*M_PI, 2 * M_PI, 2*M_PI)
-	));
-	scene.animators.push_back(std::move(spin));
-
+	// Animator spin;
+	// spin.addAnimation(std::make_unique<RotationAnimation>(
+	// 	// every time I add an object make sure to increment XD or else the wrong object will start spinnng ahahhaha
+	// 	scene.objects[3],
+	// 	4,
+	// 	glm::vec3(2*M_PI, 2 * M_PI, 2*M_PI)
+	// ));
+	// scene.animators.push_back(std::move(spin));
 	return scene;
 
 }
@@ -270,7 +275,7 @@ int main() {
 		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 
-
+		// camera view (make it so user can look around later)
 		glm::vec3 cameraPos = glm::vec3(0, 2, 3);
 		glm::vec3 target = glm::vec3(0, 0, 0);
 		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
@@ -288,12 +293,19 @@ int main() {
 		for (auto& dice : dicePhysics) {
 			dice.velocity += dice.acceleration * dt;
 			glm::vec3 newPos = dice.object->getPosition() + dice.velocity * dt;
+
+			// rotation
+			glm::vec3 newRot = dice.object->getOrientation() + dice.angularVelocity * dt;
+			dice.object->setOrientation(newRot);
 			// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
 			if (newPos.y <= .6f) {
 				newPos.y = .6f;
 				dice.velocity.y *= -dice.bounceCoeff;
 				if (std::abs(dice.velocity.y) < 0.1f) {
 					dice.velocity.y = 0.0f;
+					dice.angularVelocity = glm::vec3(0.0f);
+					// will always land on the same side (figure out how to code this idkkk)
+					// dice.object->setOrientation(glm::vec3(0, 0, 0));
 				}
 			}
 			dice.object->setPosition(newPos);
@@ -306,9 +318,6 @@ int main() {
 			o.render(myScene.program);
 		}
 		window.display();
-
-
-		
 	}
 
 	return 0;
