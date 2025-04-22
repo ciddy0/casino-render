@@ -14,6 +14,12 @@ private:
 	glm::vec3 m_scale;
 	glm::vec3 m_center;
 
+	// physics
+	glm::vec3 m_velocity{0.0f};
+	glm::vec3 m_angularVelocity{0.0f};
+	glm::vec3 m_acceleration{0.0f, 0.0, 0.0f}; // Default gravity
+	float m_bounceCoeff = 0.0f;
+
 	// The object's material.
 	glm::vec4 m_material;
 
@@ -28,6 +34,7 @@ private:
 
 
 public:
+	bool isMoving;
 	// No default constructor; you must have a mesh to initialize an object.
 	Object3D() = delete;
 
@@ -41,6 +48,10 @@ public:
 	const glm::vec3& getCenter() const;
 	const std::string& getName() const;
 	const glm::vec4& getMaterial() const;
+	const glm::vec3& getVelocity() const;
+	const glm::vec3& getAngularVelocity() const;
+	const float getBounceCoeff() const;
+
 
 	// Child management.
 	size_t numberOfChildren() const;
@@ -55,6 +66,10 @@ public:
 	void setCenter(const glm::vec3& center);
 	void setName(const std::string& name);
 	void setMaterial(const glm::vec4& material);
+	void setAcceleration(const glm::vec3& acceleration);
+	void setVelocity(const glm::vec3& velocity);
+	void setAngularVelocity(const glm::vec3& angularVelocity);
+	void setBounceCoeff(const float bounceCoeff);
 
 	// Transformations.
 	void move(const glm::vec3& offset);
@@ -65,4 +80,7 @@ public:
 	// Rendering.
 	void render(ShaderProgram& shaderProgram) const;
 	void renderRecursive(ShaderProgram& shaderProgram, const glm::mat4& parentMatrix) const;
+
+	// physics
+	void tick(float dt);
 };

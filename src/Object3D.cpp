@@ -2,6 +2,8 @@
 #include "ShaderProgram.h"
 #include <glm/ext.hpp>
 
+bool isMoving = false;
+
 glm::mat4 Object3D::buildModelMatrix() const {
 	auto m = glm::translate(glm::mat4(1), m_position);
 	m = glm::translate(m, m_center * m_scale);
@@ -50,6 +52,15 @@ const std::string& Object3D::getName() const {
 const glm::vec4& Object3D::getMaterial() const {
 	return m_material;
 }
+const glm::vec3 &Object3D::getVelocity() const {
+	return m_velocity;
+}
+const glm::vec3 &Object3D::getAngularVelocity() const {
+	return m_angularVelocity;
+}
+const float Object3D::getBounceCoeff() const {
+	return m_bounceCoeff;
+}
 
 size_t Object3D::numberOfChildren() const {
 	return m_children.size();
@@ -91,11 +102,21 @@ void Object3D::setName(const std::string& name) {
 void Object3D::setMaterial(const glm::vec4& material) {
 	m_material = material;
 }
-
+void Object3D::setAcceleration(const glm::vec3& acceleration) {
+	m_acceleration = acceleration;
+}
+void Object3D::setVelocity(const glm::vec3& velocity) {
+	m_velocity = velocity;
+}
+void Object3D::setAngularVelocity(const glm::vec3& angularVelocity) {
+	m_angularVelocity = angularVelocity;
+}
+void Object3D::setBounceCoeff(float bounceCoeff) {
+	m_bounceCoeff = bounceCoeff;
+}
 void Object3D::move(const glm::vec3& offset) {
 	m_position = m_position + offset;
 }
-
 void Object3D::rotate(const glm::vec3& rotation) {
 	m_orientation = m_orientation + rotation;
 }
@@ -129,3 +150,8 @@ void Object3D::renderRecursive(ShaderProgram& shaderProgram, const glm::mat4& pa
 		child.renderRecursive(shaderProgram, trueModel);
 	}
 }
+void Object3D::tick(float dt) {
+	m_orientation += m_angularVelocity * dt;
+	m_velocity += m_acceleration * dt;
+	m_position += m_velocity * dt;
+};
