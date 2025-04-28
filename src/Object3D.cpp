@@ -1,4 +1,7 @@
 #include "Object3D.h"
+
+#include <iostream>
+
 #include "ShaderProgram.h"
 #include <glm/ext.hpp>
 
@@ -151,7 +154,8 @@ void Object3D::renderRecursive(ShaderProgram& shaderProgram, const glm::mat4& pa
 	}
 }
 void Object3D::tick(float dt) {
-	m_orientation += m_angularVelocity * dt;
 	m_velocity += m_acceleration * dt;
 	m_position += m_velocity * dt;
+	std::cout<<m_orientation.x <<", " <<m_orientation.y << ", " << m_orientation.z<<std::endl;
+	m_orientation += m_angularVelocity * dt;
 };

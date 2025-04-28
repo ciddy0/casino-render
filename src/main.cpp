@@ -176,49 +176,53 @@ Scene lifeOfPi() {
 }
 
 Scene Casino() {
-	Scene scene{ texturingShader() };
+	Scene scene{ texturingShader()
+	};
 	// slot machine
 	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
 	slots.setScale(glm::vec3(1));
 	slots.setPosition(glm::vec3(-1, 0, -3));
 	scene.objects.push_back(std::move(slots));
+	std::cout << slots.isMoving << std::endl;
 	// table
 	auto table = assimpLoad("models/poker_table/scene.gltf", true);
 	table.setScale(glm::vec3(.001));
 	table.setPosition(glm::vec3(0, 0, 0));
+	std::cout << table.isMoving << std::endl;
 	scene.objects.push_back(std::move(table));
 	// cards and chips
 	auto casinoChips = assimpLoad("models/casino_chips/scene.gltf", true);
 	casinoChips.setScale(glm::vec3(1));
 	casinoChips.setPosition(glm::vec3(.4, .6, 0));
+	std::cout << casinoChips.isMoving << std::endl;
 	scene.objects.push_back(std::move(casinoChips));
 	// cube
-	auto cube = assimpLoad("models/cube.obj", false);
+	auto cube = assimpLoad("models/cube.obj", true);
 	cube.setScale(glm::vec3(.05));
 	cube.move(glm::vec3(0, 2, 0));
 	cube.setAcceleration(glm::vec3(0, -9.8, 0));
-	cube.setAngularVelocity(glm::vec3(1.5));
+	cube.setVelocity(glm::vec3(-.5, .5, 0));
+	cube.setAngularVelocity(glm::vec3(8, 5, 2));
 	cube.setBounceCoeff(0.5);
 	cube.isMoving = true;
 	scene.objects.push_back(std::move(cube));
-
-	// faking the spoin for now but I neeed to figure out rotational velocity
-	// Animator spin;
-	// spin.addAnimation(std::make_unique<RotationAnimation>(
-	// 	// every time I add an object make sure to increment XD or else the wrong object will start spinnng ahahhaha
-	// 	scene.objects[3],
-	// 	4,
-	// 	glm::vec3(2*M_PI, 2 * M_PI, 2*M_PI)
-	// ));
-	// scene.animators.push_back(std::move(spin));
 	return scene;
 
 }
+void snapToNearestRotation(Object3D& dice) {
+	glm::vec3 rot = dice.getOrientation();
 
+	// Convert to degrees and snap to nearest 90 degrees
+	rot = glm::degrees(rot);
+	rot.x = round(rot.x / 90) * 90;
+	rot.y = round(rot.y / 90) * 90;
+	rot.z = round(rot.z / 90) * 90;
+
+	// Convert back to radians
+	dice.setOrientation(glm::radians(rot));
+}
 int main() {
-	
 	std::cout << std::filesystem::current_path() << std::endl;
-	
 	// Initialize the window and OpenGL.
 	sf::ContextSettings settings;
 	settings.depthBits = 24; // Request a 24 bits depth buffer
@@ -233,12 +237,8 @@ int main() {
 
 	// Inintialize scene objects.
 	auto myScene = Casino();
-	// You can directly access specific objects in the scene using references.
-	auto& firstObject = myScene.objects[0];
 	// Activate the shader program.
 	myScene.program.activate();
-
-	// Set up the view and projection matrices.
 	
 	// Ready, set, go!
 	bool running = true;
@@ -260,7 +260,7 @@ int main() {
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 
 		// camera view (make it so user can look around later)
@@ -278,27 +278,49 @@ int main() {
 			anim.tick(diff.asSeconds());
 		}
 		float dt = diff.asSeconds();
-		auto dice = myScene.objects[1];
 
 		for (auto& dice : myScene.objects) {
 			if (dice.isMoving) {
 				dice.tick(dt);
+
 				// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
+				std::cout << "pos: " << dice.getPosition().y << std::endl;
 				if (dice.getPosition().y <= .6f) {
-					auto dicePos = dice.getPosition();
-					auto diceVelocity = dice.getVelocity();
-					dice.setPosition(glm::vec3(dicePos.x, .6, dicePos.z));
-					dice.setVelocity(glm::vec3(diceVelocity.x, (diceVelocity.y * -dice.getBounceCoeff()), diceVelocity.z));
-					std::cout << std::abs(dice.getVelocity().y * dice.getBounceCoeff()) << std::endl;
-					if (std::abs(diceVelocity.y) < 0.1f) {
-						diceVelocity.y = 0.0f;
-						diceVelocity.x = 0.0f;
-						dice.setAngularVelocity(glm::vec3(0.0f));
+					glm::vec3 pos = dice.getPosition();
+					glm::vec3 vel = dice.getVelocity();
+					pos.y = 0.6f;
+					// make the velocity lose "energy" guess and check values (found 0.5 for y and 0.7 for z and x simulate dice rolling well enough)
+					vel.y = vel.y * -dice.getBounceCoeff();
+					vel.x *= 0.7f;
+					vel.z *= 0.7f;
+
+					// lose rotational speed
+					dice.setAngularVelocity(dice.getAngularVelocity() * 0.9f);
+
+					dice.setPosition(pos);
+					dice.setVelocity(vel);
+					std::cout << "velocity: " << length(vel) << std::endl;
+					if (glm::length(vel) < 0.1f) {
+						dice.setVelocity(glm::vec3(0.0f));
+						auto rotVel = dice.getAngularVelocity();
+						dice.setAngularVelocity(rotVel * 0.9f);
+						auto orientation = dice.getOrientation();
+						std::cout << "Angle x: "<< orientation[0] << std::endl;
+						std::cout << "Angle y: "<< orientation[1] << std::endl;
+						std::cout << "Angle z: "<< orientation[2] << std::endl;
+						if (glm::length(rotVel) < 0.1f) {
+							std::cout << "angle x: " << glm::degrees(dice.getOrientation().x) << std::endl;
+							std::cout << "angle y: " << glm::degrees(dice.getOrientation().y)<< std::endl;
+							std::cout << "angle z: " << glm::degrees(dice.getOrientation()).z << std::endl;
+							snapToNearestRotation(dice);
+							dice.isMoving = false;
+						}
+
+							// so that my program doesnt have to tick anymore and runs smoother
 						// will not fall down on a side i need to fix this but idk how
 					}
 				}
 			}
-
 		}
 
 		// Clear the OpenGL "context".
