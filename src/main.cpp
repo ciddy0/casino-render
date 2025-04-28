@@ -249,13 +249,18 @@ int main() {
 	for (auto& anim : myScene.animators) {
 		anim.start();
 	}
-
+	bool rollDice = false;
 	while (running) {
 
 		sf::Event ev;
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed) {
 				running = false;
+			}
+			if (ev.type == sf::Event::KeyPressed) {
+				if (ev.key.code == sf::Keyboard::Space) {
+					rollDice = true;
+				}
 			}
 		}
 		auto now = c.getElapsedTime();
@@ -279,8 +284,9 @@ int main() {
 		}
 		float dt = diff.asSeconds();
 
+
 		for (auto& dice : myScene.objects) {
-			if (dice.isMoving) {
+			if (dice.isMoving && rollDice) {
 				dice.tick(dt);
 
 				// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
