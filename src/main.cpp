@@ -180,6 +180,16 @@ Scene lifeOfPi() {
 Scene Casino() {
 	Scene scene{ texturingShader()
 	};
+	std::vector<Texture> textures = {
+		loadTexture("models/carpet/textures/carpet_baseColor.jpeg", "baseTexture"),
+	};
+	auto mesh = Mesh3D::square(textures);
+	auto floor = Object3D(std::vector<Mesh3D>{mesh});
+	floor.grow(glm::vec3(5, 5, 5));
+	floor.move(glm::vec3(0, 0, 0));
+	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
+
+	scene.objects.push_back(std::move(floor));
 	// slot machine
 	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
 	slots.setScale(glm::vec3(1));
