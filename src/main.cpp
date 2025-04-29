@@ -212,7 +212,7 @@ Scene Casino() {
 	scene.objects.push_back(std::move(casinoChips));
 
 	// cube
-	auto cube = assimpLoad("models/cube.obj", true);
+	auto cube = assimpLoad("models/dice/scene.gltf", true);
 	cube.setScale(glm::vec3(.05));
 	cube.move(glm::vec3(0, 2, 0));
 	cube.setAcceleration(glm::vec3(0, -9.8, 0));
@@ -223,7 +223,7 @@ Scene Casino() {
 	scene.objects.push_back(std::move(cube));
 
 	// second cube
-	auto cube2 = assimpLoad("models/cube.obj", true);
+	auto cube2 = assimpLoad("models/dice/scene.gltf", true);
 	cube2.setScale(glm::vec3(.05));
 	cube2.move(glm::vec3(-.5, 2, 0));
 	cube2.setAcceleration(glm::vec3(0, -9.8, 0));
