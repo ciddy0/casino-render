@@ -186,18 +186,21 @@ Scene Casino() {
 	slots.setPosition(glm::vec3(-1, 0, -3));
 	scene.objects.push_back(std::move(slots));
 	std::cout << slots.isMoving << std::endl;
+
 	// table
 	auto table = assimpLoad("models/poker_table/scene.gltf", true);
 	table.setScale(glm::vec3(.001));
 	table.setPosition(glm::vec3(0, 0, 0));
 	std::cout << table.isMoving << std::endl;
 	scene.objects.push_back(std::move(table));
+
 	// cards and chips
 	auto casinoChips = assimpLoad("models/casino_chips/scene.gltf", true);
 	casinoChips.setScale(glm::vec3(1));
 	casinoChips.setPosition(glm::vec3(.4, .6, 0));
 	std::cout << casinoChips.isMoving << std::endl;
 	scene.objects.push_back(std::move(casinoChips));
+
 	// cube
 	auto cube = assimpLoad("models/cube.obj", true);
 	cube.setScale(glm::vec3(.05));
@@ -208,6 +211,17 @@ Scene Casino() {
 	cube.setBounceCoeff(0.5);
 	cube.isMoving = true;
 	scene.objects.push_back(std::move(cube));
+
+	// second cube
+	auto cube2 = assimpLoad("models/cube.obj", true);
+	cube2.setScale(glm::vec3(.05));
+	cube2.move(glm::vec3(-.5, 2, 0));
+	cube2.setAcceleration(glm::vec3(0, -9.8, 0));
+	cube2.setVelocity(glm::vec3(.5, .5, -.5));
+	cube2.setAngularVelocity(glm::vec3(12, 1, 5));
+	cube2.setBounceCoeff(0.5);
+	cube2.isMoving = true;
+	scene.objects.push_back(std::move(cube2));
 	return scene;
 
 }
@@ -251,7 +265,8 @@ int main() {
 	for (auto& anim : myScene.animators) {
 		anim.start();
 	}
-	bool rollDice = false;
+
+	bool throwDice = false;
 	glm::vec3 cameraPos = glm::vec3(0, 1, 3);
 	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
 	const float cameraSpeed = 0.1f;
@@ -263,23 +278,19 @@ int main() {
 			}
 			if (ev.type == sf::Event::KeyPressed) {
 				if (ev.key.code == sf::Keyboard::Space) {
-					rollDice = true;
+					throwDice = true;
 				}
 				// camera movement used the approach from lecture! :D
 				if (ev.key.code == sf::Keyboard::A) {
-					std::cout << "W pressed" << std::endl;
 					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(0,1,0));
 				}
 				if (ev.key.code == sf::Keyboard::D) {
-					std::cout << "D pressed" << std::endl;
 					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(0,1,0));
 				}
 				if (ev.key.code == sf::Keyboard::W) {
-					std::cout << "D pressed" << std::endl;
 					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(1,0,0));
 				}
 				if (ev.key.code == sf::Keyboard::S) {
-					std::cout << "D pressed" << std::endl;
 					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(1,0,0));
 				}
 				if (ev.key.code == sf::Keyboard::Up) {
@@ -295,7 +306,7 @@ int main() {
 		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 
-		// camera view (make it so user can look around later)
+		// camera view (from lecture)
 		glm::vec3 target = cameraPos + cameraDir;
 		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
 		glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
@@ -303,20 +314,18 @@ int main() {
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
 
-
 		// Update the scene.
 		for (auto& anim : myScene.animators) {
 			anim.tick(diff.asSeconds());
 		}
 		float dt = diff.asSeconds();
 
-
 		for (auto& dice : myScene.objects) {
-			if (dice.isMoving && rollDice) {
+			// only drop the dice if the object isMoving and if user pressed space
+			if (dice.isMoving && throwDice) {
 				dice.tick(dt);
 
 				// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
-				std::cout << "pos: " << dice.getPosition().y << std::endl;
 				if (dice.getPosition().y <= .55f) {
 					glm::vec3 pos = dice.getPosition();
 					glm::vec3 vel = dice.getVelocity();
@@ -331,25 +340,14 @@ int main() {
 
 					dice.setPosition(pos);
 					dice.setVelocity(vel);
-					std::cout << "velocity: " << length(vel) << std::endl;
 					if (glm::length(vel) < 0.1f) {
 						dice.setVelocity(glm::vec3(0.0f));
 						auto rotVel = dice.getAngularVelocity();
 						dice.setAngularVelocity(rotVel * 0.9f);
-						auto orientation = dice.getOrientation();
-						std::cout << "Angle x: "<< orientation[0] << std::endl;
-						std::cout << "Angle y: "<< orientation[1] << std::endl;
-						std::cout << "Angle z: "<< orientation[2] << std::endl;
 						if (glm::length(rotVel) < 0.1f) {
-							std::cout << "angle x: " << glm::degrees(dice.getOrientation().x) << std::endl;
-							std::cout << "angle y: " << glm::degrees(dice.getOrientation().y)<< std::endl;
-							std::cout << "angle z: " << glm::degrees(dice.getOrientation()).z << std::endl;
 							snapToNearestRotation(dice);
-							dice.isMoving = false;
+							dice.isMoving = false; // set to false so my program runs faster i think?
 						}
-
-							// so that my program doesnt have to tick anymore and runs smoother
-						// will not fall down on a side i need to fix this but idk how
 					}
 				}
 			}
