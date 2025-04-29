@@ -9,6 +9,7 @@ We now transform local space vertices to clip space using uniform matrices in th
 	See "uniform_color.frag" for a fragment shader that sets a pixel to a uniform parameter.
 */
 #define _USE_MATH_DEFINES
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glad/glad.h>
 #include <iostream>
 #include <memory>
@@ -22,6 +23,7 @@ We now transform local space vertices to clip space using uniform matrices in th
 #include "ShaderProgram.h"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Window.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 struct Scene {
 	ShaderProgram program;
@@ -250,8 +252,10 @@ int main() {
 		anim.start();
 	}
 	bool rollDice = false;
+	glm::vec3 cameraPos = glm::vec3(0, 1, 3);
+	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
+	const float cameraSpeed = 0.1f;
 	while (running) {
-
 		sf::Event ev;
 		while (window.pollEvent(ev)) {
 			if (ev.type == sf::Event::Closed) {
@@ -261,16 +265,38 @@ int main() {
 				if (ev.key.code == sf::Keyboard::Space) {
 					rollDice = true;
 				}
+				// camera movement used the approach from lecture! :D
+				if (ev.key.code == sf::Keyboard::A) {
+					std::cout << "W pressed" << std::endl;
+					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(0,1,0));
+				}
+				if (ev.key.code == sf::Keyboard::D) {
+					std::cout << "D pressed" << std::endl;
+					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(0,1,0));
+				}
+				if (ev.key.code == sf::Keyboard::W) {
+					std::cout << "D pressed" << std::endl;
+					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(1,0,0));
+				}
+				if (ev.key.code == sf::Keyboard::S) {
+					std::cout << "D pressed" << std::endl;
+					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(1,0,0));
+				}
+				if (ev.key.code == sf::Keyboard::Up) {
+					cameraPos += cameraSpeed * cameraDir;
+				}
+				if (ev.key.code == sf::Keyboard::Down) {
+					cameraPos -= cameraSpeed * cameraDir;
+				}
 			}
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 
 		// camera view (make it so user can look around later)
-		glm::vec3 cameraPos = glm::vec3(0, 2, 3);
-		glm::vec3 target = glm::vec3(0, 0, 0);
+		glm::vec3 target = cameraPos + cameraDir;
 		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
 		glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
 		myScene.program.setUniform("view", camera);
@@ -291,10 +317,10 @@ int main() {
 
 				// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
 				std::cout << "pos: " << dice.getPosition().y << std::endl;
-				if (dice.getPosition().y <= .6f) {
+				if (dice.getPosition().y <= .55f) {
 					glm::vec3 pos = dice.getPosition();
 					glm::vec3 vel = dice.getVelocity();
-					pos.y = 0.6f;
+					pos.y = 0.55f;
 					// make the velocity lose "energy" guess and check values (found 0.5 for y and 0.7 for z and x simulate dice rolling well enough)
 					vel.y = vel.y * -dice.getBounceCoeff();
 					vel.x *= 0.7f;
