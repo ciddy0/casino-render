@@ -259,6 +259,9 @@ int main() {
 	sf::Window window(sf::VideoMode{ 1200, 800 }, "Modern OpenGL", sf::Style::Resize | sf::Style::Close, settings);
 
 	gladLoadGL();
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	glFrontFace(GL_CW);
 	glEnable(GL_DEPTH_TEST);
 
 	// Inintialize scene objects.
@@ -277,9 +280,12 @@ int main() {
 	}
 
 	bool throwDice = false;
+	// camera view (from lecture)
 	glm::vec3 cameraPos = glm::vec3(0, 1, 3);
 	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
-	const float cameraSpeed = 0.1f;
+	glm::mat4 camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
+	glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
+	float cameraSpeed = 0;
 	while (running) {
 		sf::Event ev;
 		while (window.pollEvent(ev)) {
@@ -293,21 +299,27 @@ int main() {
 				// camera movement used the approach from lecture! :D
 				if (ev.key.code == sf::Keyboard::A) {
 					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(0,1,0));
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 				if (ev.key.code == sf::Keyboard::D) {
 					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(0,1,0));
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 				if (ev.key.code == sf::Keyboard::W) {
 					cameraDir = glm::rotate(cameraDir, cameraSpeed, glm::vec3(1,0,0));
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 				if (ev.key.code == sf::Keyboard::S) {
 					cameraDir = glm::rotate(cameraDir, -cameraSpeed, glm::vec3(1,0,0));
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 				if (ev.key.code == sf::Keyboard::Up) {
 					cameraPos += cameraSpeed * cameraDir;
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 				if (ev.key.code == sf::Keyboard::Down) {
 					cameraPos -= cameraSpeed * cameraDir;
+					camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 				}
 			}
 		}
@@ -315,19 +327,13 @@ int main() {
 		auto diff = now - last;
 		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
+		cameraSpeed = 20.0f * diff.asSeconds();
 
-		// camera view (from lecture)
-		glm::vec3 target = cameraPos + cameraDir;
-		glm::mat4 camera = glm::lookAt(cameraPos, target, glm::vec3(0, 1, 0));
-		glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
 
 		// Update the scene.
-		for (auto& anim : myScene.animators) {
-			anim.tick(diff.asSeconds());
-		}
 		float dt = diff.asSeconds();
 
 		for (auto& dice : myScene.objects) {
