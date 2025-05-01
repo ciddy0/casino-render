@@ -188,12 +188,13 @@ Scene Casino() {
 	floor.grow(glm::vec3(5, 5, 5));
 	floor.move(glm::vec3(0, 0, 0));
 	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
-
+	// 0
 	scene.objects.push_back(std::move(floor));
 	// slot machine
 	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
 	slots.setScale(glm::vec3(1));
 	slots.setPosition(glm::vec3(-1, 0, -3));
+	// 1
 	scene.objects.push_back(std::move(slots));
 	std::cout << slots.isMoving << std::endl;
 
@@ -202,6 +203,7 @@ Scene Casino() {
 	table.setScale(glm::vec3(.001));
 	table.setPosition(glm::vec3(0, 0, 0));
 	std::cout << table.isMoving << std::endl;
+	// 2
 	scene.objects.push_back(std::move(table));
 
 	// cards and chips
@@ -209,8 +211,30 @@ Scene Casino() {
 	casinoChips.setScale(glm::vec3(1));
 	casinoChips.setPosition(glm::vec3(.4, .6, 0));
 	std::cout << casinoChips.isMoving << std::endl;
+	// 3
 	scene.objects.push_back(std::move(casinoChips));
 
+	// animated slot (ugly)
+	auto slots2 = assimpLoad("models/slotmachine3/scene.gltf", true);
+	slots2.setScale(glm::vec3(2));
+	slots2.setPosition(glm::vec3(0, 1, -2));
+	slots2.rotate(glm::vec3(0, -M_PI/2, 0));
+	Animator animLeverDown;
+	Animator animLeverUp;
+	Animator animWheel1;
+	Animator animWheel2;
+	Animator animWheel3;
+	scene.objects.push_back(std::move(slots2));
+	animLeverDown.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
+	animWheel1.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(2).getChild(0), 3, glm::vec3(0, 10*(-2*M_PI), 0)));
+	animWheel2.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(3).getChild(0),5 , glm::vec3(0, 2*(-2*M_PI), 0)));
+	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
+	// animLeverUp.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 2.5, glm::vec3(0, 0, .5*(2*M_PI))));
+	scene.animators.push_back(std::move(animLeverDown));
+	scene.animators.push_back(std::move(animWheel1));
+	scene.animators.push_back(std::move(animWheel2));
+	scene.animators.push_back(std::move(animWheel3));
+	// scene.animators.push_back(std::move(animLeverUp));
 	// cube
 	auto cube = assimpLoad("models/dice/scene.gltf", true);
 	cube.setScale(glm::vec3(.05));
@@ -325,17 +349,18 @@ int main() {
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 		cameraSpeed = 20.0f * diff.asSeconds();
 
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
-
+		for (auto& anim : myScene.animators) {
+			anim.tick(diff.asSeconds());
+		}
 		// Update the scene.
 		float dt = diff.asSeconds();
-
 		for (auto& dice : myScene.objects) {
 			// only drop the dice if the object isMoving and if user pressed space
 			if (dice.isMoving && throwDice) {
