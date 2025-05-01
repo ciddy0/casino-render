@@ -25,6 +25,8 @@ We now transform local space vertices to clip space using uniform matrices in th
 #include <SFML/Window/Window.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 
+#include "PauseAnimation.h"
+
 struct Scene {
 	ShaderProgram program;
 	std::vector<Object3D> objects;
@@ -219,18 +221,22 @@ Scene Casino() {
 	slots2.setScale(glm::vec3(2));
 	slots2.setPosition(glm::vec3(0, 1, -2));
 	slots2.rotate(glm::vec3(0, -M_PI/2, 0));
-	Animator animLeverDown;
+	Animator animLever;
 	Animator animLeverUp;
 	Animator animWheel1;
 	Animator animWheel2;
 	Animator animWheel3;
 	scene.objects.push_back(std::move(slots2));
-	animLeverDown.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
+	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
+	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), .5));
+	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(2*M_PI))));
+
+
 	animWheel1.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(2).getChild(0), 3, glm::vec3(0, 10*(-2*M_PI), 0)));
 	animWheel2.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(3).getChild(0),5 , glm::vec3(0, 2*(-2*M_PI), 0)));
 	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
 	// animLeverUp.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 2.5, glm::vec3(0, 0, .5*(2*M_PI))));
-	scene.animators.push_back(std::move(animLeverDown));
+	scene.animators.push_back(std::move(animLever));
 	scene.animators.push_back(std::move(animWheel1));
 	scene.animators.push_back(std::move(animWheel2));
 	scene.animators.push_back(std::move(animWheel3));
@@ -351,7 +357,7 @@ int main() {
 		auto diff = now - last;
 		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
-		cameraSpeed = 20.0f * diff.asSeconds();
+		cameraSpeed = 100.0f * diff.asSeconds();
 
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
