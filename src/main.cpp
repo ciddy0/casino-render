@@ -308,8 +308,9 @@ int main() {
 	for (auto& anim : myScene.animators) {
 		anim.start();
 	}
-
+	// booleans for keyboard input
 	bool throwDice = false;
+	bool startAnimation = false;
 	// camera view (from lecture)
 	glm::vec3 cameraPos = glm::vec3(0, 1, 3);
 	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
@@ -325,6 +326,9 @@ int main() {
 			if (ev.type == sf::Event::KeyPressed) {
 				if (ev.key.code == sf::Keyboard::Space) {
 					throwDice = true;
+				}
+				if (ev.key.code == sf::Keyboard::Return) {
+					startAnimation = true;
 				}
 				// camera movement used the approach from lecture! :D
 				if (ev.key.code == sf::Keyboard::A) {
@@ -362,9 +366,13 @@ int main() {
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
-		for (auto& anim : myScene.animators) {
-			anim.tick(diff.asSeconds());
+
+		if (startAnimation) {
+			for (auto& anim : myScene.animators) {
+				anim.tick(diff.asSeconds());
+			}
 		}
+
 		// Update the scene.
 		float dt = diff.asSeconds();
 		for (auto& dice : myScene.objects) {
@@ -378,7 +386,7 @@ int main() {
 					glm::vec3 vel = dice.getVelocity();
 					pos.y = 0.55f;
 					// make the velocity lose "energy" guess and check values (found 0.5 for y and 0.7 for z and x simulate dice rolling well enough)
-					vel.y = vel.y * -dice.getBounceCoeff();
+					vel.y *= -dice.getBounceCoeff();
 					vel.x *= 0.7f;
 					vel.z *= 0.7f;
 
