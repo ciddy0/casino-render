@@ -9,7 +9,6 @@
 class PauseAnimation : public Animation {
 private:
     void applyAnimation(float dt) override {}
-
 public:
     /**
      * @brief Constructs a animation of a constant rotation by the given total rotation
