@@ -262,6 +262,29 @@ Scene Casino() {
 	cube2.setBounceCoeff(0.5);
 	cube2.isMoving = true;
 	scene.objects.push_back(std::move(cube2));
+
+	// letter g
+	auto letterG = assimpLoad("models/g_letter/scene.gltf", true);
+	letterG.setScale(glm::vec3(.5));
+	letterG.move(glm::vec3(-.5, 2, 0));
+	scene.objects.push_back(std::move(letterG));
+	// letter a
+	auto letterA = assimpLoad("models/a_letter/scene.gltf", true);
+	letterA.setScale(glm::vec3(.5));
+	letterA.move(glm::vec3(-.2, 2, 0));
+	scene.objects.push_back(std::move(letterA));
+	// letter t
+	auto letterT = assimpLoad("models/t_letter/scene.gltf", true);
+	letterT.setScale(glm::vec3(.5));
+	letterT.move(glm::vec3(0.1, 2, 0));
+	scene.objects.push_back(std::move(letterT));
+	// letter o
+	auto letterO = assimpLoad("models/o_letter/scene.gltf", true);
+	letterO.setScale(glm::vec3(.5));
+	letterO.move(glm::vec3(.4, 2, 0));
+	scene.objects.push_back(std::move(letterO));
+
+
 	return scene;
 
 }
