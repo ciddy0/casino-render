@@ -1,0 +1,11 @@
+Model Information:
+* title:	G Letter
+* source:	https://sketchfab.com/3d-models/g-letter-166889f2242d492dbcef78dd7aebf3bf
+* author:	andre.arancibia (https://sketchfab.com/andre.arancibia)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "G Letter" (https://sketchfab.com/3d-models/g-letter-166889f2242d492dbcef78dd7aebf3bf) by andre.arancibia (https://sketchfab.com/andre.arancibia) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

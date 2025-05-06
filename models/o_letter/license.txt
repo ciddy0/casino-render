@@ -1,0 +1,11 @@
+Model Information:
+* title:	O Letter
+* source:	https://sketchfab.com/3d-models/o-letter-8bb192231c194ac6acb5dac40627ae12
+* author:	andre.arancibia (https://sketchfab.com/andre.arancibia)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "O Letter" (https://sketchfab.com/3d-models/o-letter-8bb192231c194ac6acb5dac40627ae12) by andre.arancibia (https://sketchfab.com/andre.arancibia) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

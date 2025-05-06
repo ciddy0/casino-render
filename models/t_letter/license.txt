@@ -1,0 +1,11 @@
+Model Information:
+* title:	T Letter
+* source:	https://sketchfab.com/3d-models/t-letter-708d7e7f28f24c82b36adf388b81aa64
+* author:	andre.arancibia (https://sketchfab.com/andre.arancibia)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "T Letter" (https://sketchfab.com/3d-models/t-letter-708d7e7f28f24c82b36adf388b81aa64) by andre.arancibia (https://sketchfab.com/andre.arancibia) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
