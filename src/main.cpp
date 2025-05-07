@@ -182,11 +182,11 @@ Scene lifeOfPi() {
 Scene Casino() {
 	Scene scene{ texturingShader()
 	};
-	std::vector<Texture> textures = {
-		loadTexture("models/carpet/textures/carpet_baseColor.jpeg", "baseTexture"),
+	std::vector<Texture> floorTextures = {
+		loadTexture("models/carpet.jpeg", "baseTexture"),
 	};
-	auto mesh = Mesh3D::square(textures);
-	auto floor = Object3D(std::vector<Mesh3D>{mesh});
+	auto floorMesh = Mesh3D::square(floorTextures);
+	auto floor = Object3D(std::vector<Mesh3D>{floorMesh});
 	floor.grow(glm::vec3(5, 5, 5));
 	floor.move(glm::vec3(0, 0, 0));
 	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
@@ -236,9 +236,7 @@ Scene Casino() {
 	animWheel1.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(2).getChild(0), 3, glm::vec3(0, 10*(-2*M_PI), 0)));
 	animWheel2.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(3).getChild(0),5 , glm::vec3(0, 2*(-2*M_PI), 0)));
 	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
-	// animLeverUp.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 2.5, glm::vec3(0, 0, .5*(2*M_PI))));
 
-	// scene.animators.push_back(std::move(animLeverUp));
 	// cube
 	auto cube = assimpLoad("models/dice/scene.gltf", true);
 	cube.setScale(glm::vec3(.05));
@@ -278,9 +276,6 @@ Scene Casino() {
 	glm::vec3 p3_t = glm::vec3(0.1, 2, 0);
 	glm::vec3 p3_o = glm::vec3(.4, 2, 0);
 
-
-
-
 	//letter a
 	auto letterA = assimpLoad("models/a_letter/scene.gltf", true);
 	letterA.setScale(glm::vec3(.5));
@@ -297,6 +292,53 @@ Scene Casino() {
 	letterO.setScale(glm::vec3(.5));
 	letterO.move(glm::vec3(.4, 2, 3));
 	scene.objects.push_back(std::move(letterO));
+
+	// left wall
+	std::vector<Texture> WallTextures = {
+		loadTexture("models/casino_left.jpg", "baseTexture"),
+	};
+	std::vector<Texture> WallTextures2 = {
+		loadTexture("models/whitewall.jpg", "baseTexture"),
+	};
+	auto leftWallMesh = Mesh3D::square(WallTextures);
+	auto leftWall = Object3D(std::vector<Mesh3D>{leftWallMesh});
+	leftWall.grow(glm::vec3(5, 5, 5));
+	leftWall.move(glm::vec3(-2, 2.5, 0));
+	leftWall.rotate(glm::vec3(0, M_PI/2, 0));
+	// 0
+	scene.objects.push_back(std::move(leftWall));
+
+	auto rightWallMesh = Mesh3D::square(WallTextures);
+	auto rightWall = Object3D(std::vector<Mesh3D>{rightWallMesh});
+	rightWall.grow(glm::vec3(5, 5, 5));
+	rightWall.move(glm::vec3(2, 2.5, 0));
+	rightWall.rotate(glm::vec3(0, -M_PI/2, 0));
+	scene.objects.push_back(std::move(rightWall));
+
+	auto backWallMesh = Mesh3D::square(WallTextures2);
+	auto backWall = Object3D(std::vector<Mesh3D>{backWallMesh});
+	backWall.grow(glm::vec3(5, 5.8, 5));
+	backWall.move(glm::vec3(0, 2.5, -2.8));
+	backWall.rotate(glm::vec3(0, 0, 0));
+	scene.objects.push_back(std::move(backWall));
+
+	auto frontWallMesh = Mesh3D::square(WallTextures2);
+	auto frontWall = Object3D(std::vector<Mesh3D>{frontWallMesh});
+	frontWall.grow(glm::vec3(5, 5.8, 5));
+	frontWall.move(glm::vec3(0, 2.5, 2.5));
+	frontWall.rotate(glm::vec3(0, M_PI, 0));
+	scene.objects.push_back(std::move(frontWall));
+
+	std::vector<Texture> ceilingTextures = {
+		loadTexture("models/roof.jpg", "baseTexture"),
+	};
+	auto ceilingMesh = Mesh3D::square(ceilingTextures);
+	auto ceiling = Object3D(std::vector<Mesh3D>{ceilingMesh});
+	ceiling.grow(glm::vec3(5, 5, 5));
+	ceiling.move(glm::vec3(0, 5, 0));
+	ceiling.rotate(glm::vec3(-M_PI / 2, 0, M_PI));
+	// 0
+	scene.objects.push_back(std::move(ceiling));
 
 	Animator animName;
 	animName.addAnimation(std::make_unique<PauseAnimation>(scene.objects[7], 7));
@@ -360,7 +402,7 @@ int main() {
 	bool throwDice = false;
 	bool startAnimation = false;
 	// camera view (from lecture)
-	glm::vec3 cameraPos = glm::vec3(0, 1, 3);
+	glm::vec3 cameraPos = glm::vec3(0, 1.3, 2);
 	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
 	glm::mat4 camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 	glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);

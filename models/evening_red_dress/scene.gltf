@@ -1,0 +1,255 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 3621,
+      "max": [
+        26.455276489257813,
+        159.82315063476563,
+        14.155550003051758
+      ],
+      "min": [
+        -30.7007999420166,
+        26.96249771118164,
+        -21.717891693115234
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 43452,
+      "componentType": 5126,
+      "count": 3621,
+      "max": [
+        0.9970573782920837,
+        0.9816874265670776,
+        0.9999709129333496
+      ],
+      "min": [
+        -0.9989304542541504,
+        -0.5041422247886658,
+        -0.9999902844429016
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 3621,
+      "max": [
+        0.4232335388660431,
+        1.6148685216903687
+      ],
+      "min": [
+        -0.13545364141464233,
+        0.22124890983104706
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 28968,
+      "componentType": 5126,
+      "count": 3621,
+      "max": [
+        0.4232335388660431,
+        1.6148685216903687
+      ],
+      "min": [
+        -0.13545364141464233,
+        0.22124890983104706
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 57936,
+      "componentType": 5126,
+      "count": 3621,
+      "max": [
+        0.4232335388660431,
+        1.6148685216903687
+      ],
+      "min": [
+        -0.13545364141464233,
+        0.22124890983104706
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 19638,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "samsikua (https://sketchfab.com/samsikua)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/evening-red-dress-0e8acea5f2a14f08947837001bb0992d",
+      "title": "Evening Red Dress"
+    },
+    "generator": "Sketchfab-13.39.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 78552,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 86904,
+      "byteOffset": 78552,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 86904,
+      "byteOffset": 165456,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 252360,
+      "uri": "scene.bin"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "FABRIC_1_FRONT_2767",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.384314,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8621141776686232
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "DarkRedDress_FABRIC 1_FRONT_2767_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TEXCOORD_0": 2,
+            "TEXCOORD_1": 3,
+            "TEXCOORD_2": 4
+          },
+          "indices": 5,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.0010000000474974513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0010000000474974513,
+        0.0,
+        0.0,
+        -0.0010000000474974513,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "d8f2f45233514700bd60a75cf09f80cd.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        10.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        10.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "DarkRedDress"
+    },
+    {
+      "mesh": 0,
+      "name": "DarkRedDress_FABRIC 1_FRONT_2767_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
