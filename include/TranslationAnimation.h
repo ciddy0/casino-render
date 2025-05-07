@@ -4,6 +4,8 @@
 
 #ifndef TRANSLATIONANIMATION_H
 #define TRANSLATIONANIMATION_H
+#include "Animation.h"
+
 class TranslationAnimation : public Animation {
     glm::vec3 m_perSecond;
     glm::vec3& m_objectPosition;

@@ -4,12 +4,14 @@
 
 #ifndef BEZIERANIMATION_H
 #define BEZIERANIMATION_H
-class BezierTranslationAnimation : public Animation {
+#include "Animation.h"
+#include "Object3D.h"
+class BezierAnimation : public Animation {
     glm::vec3 m_p0, m_p1, m_p2, m_p3;
-    glm::vec3& m_objectPosition;
+    glm::vec3 m_initialPos;
     void applyAnimation(float dt) override {
         float t = currentTime() / duration();
-        m_objectPosition = calculateCubicBezierPoint(t);
+        object().setPosition(calculateCubicBezierPoint(t));
     };
     glm::vec3 calculateCubicBezierPoint(float t)  {
         float t2 = 1-t;
@@ -22,9 +24,8 @@ class BezierTranslationAnimation : public Animation {
     }
 
 public:
-    BezierTranslationAnimation(glm::vec3& objectPosition, float duration, const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3):
-        Animation(duration),
-        m_objectPosition(objectPosition),
+    BezierAnimation(Object3D& object, float duration, const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3):
+        Animation(object, duration),
         m_p0(p0), m_p1(p1), m_p2(p2), m_p3(p3) {}
 };
 #endif //BEZIERANIMATION_H

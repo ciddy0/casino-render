@@ -26,7 +26,7 @@ We now transform local space vertices to clip space using uniform matrices in th
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "PauseAnimation.h"
-
+#include "BezierAnimation.h"
 struct Scene {
 	ShaderProgram program;
 	std::vector<Object3D> objects;
@@ -226,6 +226,7 @@ Scene Casino() {
 	Animator animWheel1;
 	Animator animWheel2;
 	Animator animWheel3;
+	// 4
 	scene.objects.push_back(std::move(slots2));
 	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
 	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), .5));
@@ -236,10 +237,7 @@ Scene Casino() {
 	animWheel2.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(3).getChild(0),5 , glm::vec3(0, 2*(-2*M_PI), 0)));
 	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
 	// animLeverUp.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 2.5, glm::vec3(0, 0, .5*(2*M_PI))));
-	scene.animators.push_back(std::move(animLever));
-	scene.animators.push_back(std::move(animWheel1));
-	scene.animators.push_back(std::move(animWheel2));
-	scene.animators.push_back(std::move(animWheel3));
+
 	// scene.animators.push_back(std::move(animLeverUp));
 	// cube
 	auto cube = assimpLoad("models/dice/scene.gltf", true);
@@ -250,6 +248,7 @@ Scene Casino() {
 	cube.setAngularVelocity(glm::vec3(8, 5, 2));
 	cube.setBounceCoeff(0.5);
 	cube.isMoving = true;
+	// 5
 	scene.objects.push_back(std::move(cube));
 
 	// second cube
@@ -261,30 +260,56 @@ Scene Casino() {
 	cube2.setAngularVelocity(glm::vec3(12, 1, 5));
 	cube2.setBounceCoeff(0.5);
 	cube2.isMoving = true;
+	// 6
 	scene.objects.push_back(std::move(cube2));
 
 	// letter g
 	auto letterG = assimpLoad("models/g_letter/scene.gltf", true);
 	letterG.setScale(glm::vec3(.5));
-	letterG.move(glm::vec3(-.5, 2, 0));
+	letterG.move(glm::vec3(-.5, 2, 3));
+	// 7
 	scene.objects.push_back(std::move(letterG));
-	// letter a
+
+	glm::vec3 p0 = glm::vec3(-.5, 2, 3);
+	glm::vec3 p1 = glm::vec3(0, .5, 0);
+	glm::vec3 p2 = glm::vec3(1, 0, 0);
+	glm::vec3 p3_g = glm::vec3(-.5, 2, 0);
+	glm::vec3 p3_a = glm::vec3(-.2, 2, 0);
+	glm::vec3 p3_t = glm::vec3(0.1, 2, 0);
+	glm::vec3 p3_o = glm::vec3(.4, 2, 0);
+
+
+
+
+	//letter a
 	auto letterA = assimpLoad("models/a_letter/scene.gltf", true);
 	letterA.setScale(glm::vec3(.5));
-	letterA.move(glm::vec3(-.2, 2, 0));
+	letterA.move(glm::vec3(-.2, 2, 3));
 	scene.objects.push_back(std::move(letterA));
+
 	// letter t
 	auto letterT = assimpLoad("models/t_letter/scene.gltf", true);
 	letterT.setScale(glm::vec3(.5));
-	letterT.move(glm::vec3(0.1, 2, 0));
+	letterT.move(glm::vec3(0.1, 2, 3));
 	scene.objects.push_back(std::move(letterT));
 	// letter o
 	auto letterO = assimpLoad("models/o_letter/scene.gltf", true);
 	letterO.setScale(glm::vec3(.5));
-	letterO.move(glm::vec3(.4, 2, 0));
+	letterO.move(glm::vec3(.4, 2, 3));
 	scene.objects.push_back(std::move(letterO));
 
+	Animator animName;
+	animName.addAnimation(std::make_unique<PauseAnimation>(scene.objects[7], 7));
+	animName.addAnimation(std::make_unique<BezierAnimation>(scene.objects[7], 3, p0, p1, p2, p3_g));
+	animName.addAnimation(std::make_unique<BezierAnimation>(scene.objects[8], 3, p0, p1, p2, p3_a));
+	animName.addAnimation(std::make_unique<BezierAnimation>(scene.objects[9], 3, p0, p1, p2, p3_t));
+	animName.addAnimation(std::make_unique<BezierAnimation>(scene.objects[10], 3, p0, p1, p2, p3_o));
 
+	scene.animators.push_back(std::move(animName));
+	scene.animators.push_back(std::move(animLever));
+	scene.animators.push_back(std::move(animWheel1));
+	scene.animators.push_back(std::move(animWheel2));
+	scene.animators.push_back(std::move(animWheel3));
 	return scene;
 
 }
