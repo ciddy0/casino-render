@@ -20,8 +20,8 @@ add_executable (Graphics "src/main.cpp"  "include/AssimpImport.h" "include/Mesh3
 
 # Find and link external libraries, like SFML.
 # This only works if Vcpkg has been configured correctly.
-find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
-target_link_libraries(Graphics PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
+find_package(SFML COMPONENTS audio system window graphics CONFIG REQUIRED)
+target_link_libraries(Graphics PRIVATE sfml-system sfml-network sfml-graphics sfml-window sfml-audio "-framework AudioToolBox" "-framework CoreAudio")
 
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(Graphics PRIVATE assimp::assimp)
@@ -50,7 +50,13 @@ add_custom_target(copymodels
         COMMENT "copying ${CMAKE_SOURCE_DIR}/models to ${CMAKE_CURRENT_BINARY_DIR}/models"
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
-add_dependencies(Graphics copyshaders copymodels)
+add_custom_target(copysounds
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/sounds
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/sounds ${CMAKE_BINARY_DIR}/sounds
+        COMMENT "copying ${CMAKE_SOURCE_DIR}/sounds to ${CMAKE_CURRENT_BINARY_DIR}/sounds"
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+add_dependencies(Graphics copyshaders copymodels copysounds)
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

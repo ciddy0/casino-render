@@ -27,6 +27,8 @@ We now transform local space vertices to clip space using uniform matrices in th
 
 #include "PauseAnimation.h"
 #include "BezierAnimation.h"
+#include <SFML/Audio.hpp>
+#include <SFML/System.hpp>
 
 struct Scene {
 	ShaderProgram program;
@@ -228,13 +230,16 @@ Scene Casino() {
 	Animator animWheel3;
 	// 4
 	scene.objects.push_back(std::move(slots2));
+	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
 	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), .5));
 	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(2*M_PI))));
 
-
+	animWheel1.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animWheel1.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(2).getChild(0), 3, glm::vec3(0, 10*(-2*M_PI), 0)));
+	animWheel2.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animWheel2.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(3).getChild(0),5 , glm::vec3(0, 2*(-2*M_PI), 0)));
+	animWheel3.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
 
 	// cube
@@ -417,7 +422,15 @@ int main() {
 	auto myScene = Casino();
 	// Activate the shader program.
 	myScene.program.activate();
-	
+	sf::SoundBuffer diceBuffer, soundBuffer, winBuffer;
+	if (!diceBuffer.loadFromFile("sounds/dice.flac") || !soundBuffer.loadFromFile("sounds/coin-inserting.wav")
+		|| !winBuffer.loadFromFile("sounds/win.wav")) {
+		std::cerr << "Failed to load audio :c" << std::endl;
+	}
+	sf::Sound diceSound, coinSound, winSound;
+	diceSound.setBuffer(diceBuffer);
+	coinSound.setBuffer(soundBuffer);
+	winSound.setBuffer(winBuffer);
 	// Ready, set, go!
 	bool running = true;
 	sf::Clock c;
@@ -436,6 +449,8 @@ int main() {
 	glm::mat4 camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
 	glm::mat4 perspective = glm::perspective(glm::radians(45.0), static_cast<double>(window.getSize().x) / window.getSize().y, 0.1, 100.0);
 	float cameraSpeed = 0;
+	auto animationTimeElapsed = 0.0;
+	bool winSoundActive = true;
 	while (running) {
 		sf::Event ev;
 		while (window.pollEvent(ev)) {
@@ -447,6 +462,7 @@ int main() {
 					throwDice = true;
 				}
 				if (ev.key.code == sf::Keyboard::Return) {
+					coinSound.play();
 					startAnimation = true;
 				}
 				// camera movement used the approach from lecture! :D
@@ -478,17 +494,24 @@ int main() {
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		// std::cout << now.asSeconds() << std::endl;
+
+		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 		cameraSpeed = 100.0f * diff.asSeconds();
 
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
-
 		if (startAnimation) {
 			for (auto& anim : myScene.animators) {
 				anim.tick(diff.asSeconds());
+				animationTimeElapsed += .1;
+				std::cout << animationTimeElapsed << std::endl;
+				if (animationTimeElapsed > 2800 && winSoundActive) {
+					winSound.play();
+					winSoundActive = false;
+				}
 			}
 		}
 
@@ -501,6 +524,7 @@ int main() {
 
 				// Check if the dice has hit the table (I need to figure out collisions, hard coded for now)
 				if (dice.getPosition().y <= .55f) {
+					diceSound.play();
 					glm::vec3 pos = dice.getPosition();
 					glm::vec3 vel = dice.getVelocity();
 					pos.y = 0.55f;
