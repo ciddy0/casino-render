@@ -1,0 +1,11 @@
+Model Information:
+* title:	Victorian Chandelier
+* source:	https://sketchfab.com/3d-models/victorian-chandelier-d5782ff0e6434d0296d3c8433925f4e4
+* author:	alefarfer (https://sketchfab.com/alefarfer)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Victorian Chandelier" (https://sketchfab.com/3d-models/victorian-chandelier-d5782ff0e6434d0296d3c8433925f4e4) by alefarfer (https://sketchfab.com/alefarfer) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

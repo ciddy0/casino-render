@@ -1,0 +1,11 @@
+Model Information:
+* title:	Deck of cards
+* source:	https://sketchfab.com/3d-models/deck-of-cards-a96e522f1546440d9a82d853c98a8417
+* author:	Qlone (https://sketchfab.com/Qlone)
+
+Model License:
+* license type:	CC-BY-ND-4.0 (http://creativecommons.org/licenses/by-nd/4.0/)
+* requirements:	Author must be credited. Modified versions can not be distributed. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Deck of cards" (https://sketchfab.com/3d-models/deck-of-cards-a96e522f1546440d9a82d853c98a8417) by Qlone (https://sketchfab.com/Qlone) licensed under CC-BY-ND-4.0 (http://creativecommons.org/licenses/by-nd/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Poker Table
+* source:	https://sketchfab.com/3d-models/poker-table-a48473a5ae7c437496a7aa388f8c458b
+* author:	Pieter Ferreira (https://sketchfab.com/Badboy17Aiden)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Poker Table" (https://sketchfab.com/3d-models/poker-table-a48473a5ae7c437496a7aa388f8c458b) by Pieter Ferreira (https://sketchfab.com/Badboy17Aiden) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

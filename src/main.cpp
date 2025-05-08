@@ -27,6 +27,7 @@ We now transform local space vertices to clip space using uniform matrices in th
 
 #include "PauseAnimation.h"
 #include "BezierAnimation.h"
+
 struct Scene {
 	ShaderProgram program;
 	std::vector<Object3D> objects;
@@ -187,24 +188,24 @@ Scene Casino() {
 	};
 	auto floorMesh = Mesh3D::square(floorTextures);
 	auto floor = Object3D(std::vector<Mesh3D>{floorMesh});
-	floor.grow(glm::vec3(5, 5, 5));
+	floor.grow(glm::vec3(10, 10, 10));
 	floor.move(glm::vec3(0, 0, 0));
 	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
 	// 0
 	scene.objects.push_back(std::move(floor));
-	// slot machine
-	auto slots = assimpLoad("models/slot_machine/scene.gltf", true);
-	slots.setScale(glm::vec3(1));
-	slots.setPosition(glm::vec3(-1, 0, -3));
+	// pool table
+	auto poolTable = assimpLoad("models/pool_table/scene.gltf", true);
+	poolTable.grow(glm::vec3(0.002));
+	poolTable.rotate(glm::vec3(0, -M_PI/2, 0));
+	poolTable.move(glm::vec3(-2, .3, -3));
+
 	// 1
-	scene.objects.push_back(std::move(slots));
-	std::cout << slots.isMoving << std::endl;
+	scene.objects.push_back(std::move(poolTable));
 
 	// table
 	auto table = assimpLoad("models/poker_table/scene.gltf", true);
 	table.setScale(glm::vec3(.001));
 	table.setPosition(glm::vec3(0, 0, 0));
-	std::cout << table.isMoving << std::endl;
 	// 2
 	scene.objects.push_back(std::move(table));
 
@@ -212,14 +213,13 @@ Scene Casino() {
 	auto casinoChips = assimpLoad("models/casino_chips/scene.gltf", true);
 	casinoChips.setScale(glm::vec3(1));
 	casinoChips.setPosition(glm::vec3(.4, .6, 0));
-	std::cout << casinoChips.isMoving << std::endl;
 	// 3
 	scene.objects.push_back(std::move(casinoChips));
 
 	// animated slot (ugly)
 	auto slots2 = assimpLoad("models/slotmachine3/scene.gltf", true);
 	slots2.setScale(glm::vec3(2));
-	slots2.setPosition(glm::vec3(0, 1, -2));
+	slots2.setPosition(glm::vec3(0, 0.8, -4));
 	slots2.rotate(glm::vec3(0, -M_PI/2, 0));
 	Animator animLever;
 	Animator animLeverUp;
@@ -293,6 +293,32 @@ Scene Casino() {
 	letterO.move(glm::vec3(.4, 2, 3));
 	scene.objects.push_back(std::move(letterO));
 
+	// deck of cards
+	auto cardDeck = assimpLoad("models/deck_of_cards/scene.gltf", true);
+	cardDeck.grow(glm::vec3(0.001));
+	cardDeck.move(glm::vec3(.4, .6, 0));
+	scene.objects.push_back(std::move(cardDeck));
+
+	// roulette table
+	auto rouletteTable = assimpLoad("models/roulette_table/scene.gltf", true);
+	rouletteTable.grow(glm::vec3(.3));
+	rouletteTable.move(glm::vec3(3, .8, -2.5));
+	rouletteTable.rotate(glm::vec3(0, -M_PI/2, 0));
+	scene.objects.push_back(std::move(rouletteTable));
+
+	// different poker table
+	auto pokerTable2 = assimpLoad("models/poker_table2/scene.gltf", true);
+	pokerTable2.grow(glm::vec3(1));
+	pokerTable2.move(glm::vec3(3, -1.5, 0));
+	scene.objects.push_back(std::move(pokerTable2));
+
+	// bar
+	auto bar = assimpLoad("models/art_deco_bar/scene.gltf", true);
+	bar.grow(glm::vec3(.8));
+	bar.move(glm::vec3(3, 0, -4.6));
+	bar.isMoving = false;
+	scene.objects.push_back(std::move(bar));
+
 	// left wall
 	std::vector<Texture> WallTextures = {
 		loadTexture("models/casino_left.jpg", "baseTexture"),
@@ -302,30 +328,32 @@ Scene Casino() {
 	};
 	auto leftWallMesh = Mesh3D::square(WallTextures);
 	auto leftWall = Object3D(std::vector<Mesh3D>{leftWallMesh});
-	leftWall.grow(glm::vec3(5, 5, 5));
-	leftWall.move(glm::vec3(-2, 2.5, 0));
+	leftWall.grow(glm::vec3(10, 10, 10));
+	leftWall.move(glm::vec3(-5, 4.5, 0));
 	leftWall.rotate(glm::vec3(0, M_PI/2, 0));
 	// 0
 	scene.objects.push_back(std::move(leftWall));
 
 	auto rightWallMesh = Mesh3D::square(WallTextures);
 	auto rightWall = Object3D(std::vector<Mesh3D>{rightWallMesh});
-	rightWall.grow(glm::vec3(5, 5, 5));
-	rightWall.move(glm::vec3(2, 2.5, 0));
+	rightWall.grow(glm::vec3(10, 10, 10));
+	rightWall.move(glm::vec3(5, 4.5, 0));
 	rightWall.rotate(glm::vec3(0, -M_PI/2, 0));
 	scene.objects.push_back(std::move(rightWall));
 
+	// front wall
 	auto backWallMesh = Mesh3D::square(WallTextures2);
 	auto backWall = Object3D(std::vector<Mesh3D>{backWallMesh});
-	backWall.grow(glm::vec3(5, 5.8, 5));
-	backWall.move(glm::vec3(0, 2.5, -2.8));
+	backWall.grow(glm::vec3(10, 10.8, 10));
+	backWall.move(glm::vec3(0, 4.4, -5));
 	backWall.rotate(glm::vec3(0, 0, 0));
 	scene.objects.push_back(std::move(backWall));
 
+	// back wall
 	auto frontWallMesh = Mesh3D::square(WallTextures2);
 	auto frontWall = Object3D(std::vector<Mesh3D>{frontWallMesh});
-	frontWall.grow(glm::vec3(5, 5.8, 5));
-	frontWall.move(glm::vec3(0, 2.5, 2.5));
+	frontWall.grow(glm::vec3(10, 10.8, 10));
+	frontWall.move(glm::vec3(0, 4.4, 5));
 	frontWall.rotate(glm::vec3(0, M_PI, 0));
 	scene.objects.push_back(std::move(frontWall));
 
@@ -334,7 +362,7 @@ Scene Casino() {
 	};
 	auto ceilingMesh = Mesh3D::square(ceilingTextures);
 	auto ceiling = Object3D(std::vector<Mesh3D>{ceilingMesh});
-	ceiling.grow(glm::vec3(5, 5, 5));
+	ceiling.grow(glm::vec3(10, 10, 10));
 	ceiling.move(glm::vec3(0, 5, 0));
 	ceiling.rotate(glm::vec3(-M_PI / 2, 0, M_PI));
 	// 0
@@ -376,6 +404,7 @@ int main() {
 	settings.antialiasingLevel = 2;  // Request 2 levels of antialiasing
 	settings.majorVersion = 3;
 	settings.minorVersion = 3;
+
 	sf::Window window(sf::VideoMode{ 1200, 800 }, "Modern OpenGL", sf::Style::Resize | sf::Style::Close, settings);
 
 	gladLoadGL();
@@ -449,7 +478,7 @@ int main() {
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
 		cameraSpeed = 100.0f * diff.asSeconds();
 
