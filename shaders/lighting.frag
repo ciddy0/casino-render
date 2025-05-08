@@ -33,9 +33,28 @@ void main() {
     // TODO: using the lecture notes, compute ambientIntensity, diffuseIntensity, 
     // and specularIntensity.
 
-    vec3 ambientIntensity = vec3(0);
+    // simulate like light boucning around the scene (lecture)
+    vec3 ambientIntensity = material.x * ambientColor;
+
+    // simulate light scattering (lecture)
     vec3 diffuseIntensity = vec3(0);
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = -directionalLight;
+    float lambertFactor = dot(norm, normalize(lightDir));
+    if (lambertFactor>0){
+        diffuseIntensity = material.y * directionalColor * lambertFactor;
+    }
+
+    // simulate shiiny highlights (lecture)
     vec3 specularIntensity = vec3(0);
+    if (lambertFactor > 0){
+        vec3 eyeDir = normalize(viewPos - FragWorldPos);
+        vec3 reflectDir = normalize(reflect(-lightDir, norm));
+        float spec = dot(reflectDir, eyeDir);
+        if (spec > 0){
+            specularIntensity = material.z * directionalColor * pow(spec, material.w);
+        }
+    }
 
     vec3 lightIntensity = ambientIntensity + diffuseIntensity + specularIntensity;
     FragColor = vec4(lightIntensity, 1) * texture(baseTexture, TexCoord);

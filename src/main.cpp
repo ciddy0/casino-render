@@ -76,160 +76,52 @@ Texture loadTexture(const std::filesystem::path& path, const std::string& sample
 	return Texture::loadImage(i, samplerName);
 }
 
-/*****************************************************************************************
-*  DEMONSTRATION SCENES
-*****************************************************************************************/
-Scene bunny() {
-	Scene scene{ texturingShader() };
-
-	// We assume that (0,0) in texture space is the upper left corner, but some artists use (0,0) in the lower
-	// left corner. In that case, we have to flip the V-coordinate of each UV texture location. The last parameter
-	// to assimpLoad controls this. If you load a model and it looks very strange, try changing the last parameter.
-	auto bunny = assimpLoad("models/bunny_textured.obj", true);
-	bunny.grow(glm::vec3(9, 9, 9));
-	bunny.move(glm::vec3(0.2, -1, 0));
-	
-	// Move all objects into the scene's objects list.
-	scene.objects.push_back(std::move(bunny));
-	// Now the "bunny" variable is empty; if we want to refer to the bunny object, we need to reference 
-	// scene.objects[0]
-
-	Animator spinBunny;
-	// Spin the bunny 360 degrees over 10 seconds.
-	spinBunny.addAnimation(std::make_unique<RotationAnimation>(scene.objects[0], 10.0, glm::vec3(0, 2 * M_PI, 0)));
-	
-	// Move all animators into the scene's animators list.
-	scene.animators.push_back(std::move(spinBunny));
-
-	return scene;
-}
-
-
-/**
- * @brief Demonstrates loading a square, oriented as the "floor", with a manually-specified texture
- * that does not come from Assimp.
- */
-Scene marbleSquare() {
-	Scene scene{ texturingShader() };
-
-	std::vector<Texture> textures = {
-		loadTexture("models/White_marble_03/Textures_2K/white_marble_03_2k_baseColor.tga", "baseTexture"),
-	};
-	auto mesh = Mesh3D::square(textures);
-	auto floor = Object3D(std::vector<Mesh3D>{mesh});
-	floor.grow(glm::vec3(5, 5, 5));
-	floor.move(glm::vec3(0, -1.5, 0));
-	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
-
-	scene.objects.push_back(std::move(floor));
-	return scene;
-}
-
-/**
- * @brief Loads a cube with a cube map texture.
- */
-Scene cube() {
-	Scene scene{ texturingShader() };
-
-	auto cube = assimpLoad("models/cube.obj", true);
-
-	scene.objects.push_back(std::move(cube));
-
-	Animator spinCube;
-	spinCube.addAnimation(std::make_unique<RotationAnimation>(scene.objects[0], 10.0, glm::vec3(0, 2 * M_PI, 0)));
-	// Then spin around the x axis.
-	spinCube.addAnimation(std::make_unique<RotationAnimation>(scene.objects[0], 10.0, glm::vec3(2 * M_PI, 0, 0)));
-
-	scene.animators.push_back(std::move(spinCube));
-
-	return scene;
-}
-
-/**
- * @brief Constructs a scene of a tiger sitting in a boat, where the tiger is the child object
- * of the boat.
- * @return
- */
-Scene lifeOfPi() {
-	// This scene is more complicated; it has child objects, as well as animators.
-	Scene scene{ texturingShader() };
-
-	auto boat = assimpLoad("models/boat/boat.fbx", true);
-	boat.move(glm::vec3(0, -0.7, 0));
-	boat.grow(glm::vec3(0.01, 0.01, 0.01));
-	auto tiger = assimpLoad("models/tiger/scene.gltf", true);
-	tiger.move(glm::vec3(0, -5, 10));
-	// Move the tiger to be a child of the boat.
-	boat.addChild(std::move(tiger));
-
-	// Move the boat into the scene list.
-	scene.objects.push_back(std::move(boat));
-
-	// We want these animations to referenced the *moved* objects, which are no longer
-	// in the variables named "tiger" and "boat". "boat" is now in the "objects" list at
-	// index 0, and "tiger" is the index-1 child of the boat.
-	Animator animBoat;
-	animBoat.addAnimation(std::make_unique<RotationAnimation>(scene.objects[0], 10, glm::vec3(0, 2 * M_PI, 0)));
-	Animator animTiger;
-	animTiger.addAnimation(std::make_unique<RotationAnimation>(scene.objects[0].getChild(1), 10, glm::vec3(0, 0, 2 * M_PI)));
-
-	// The Animators will be destroyed when leaving this function, so we move them into
-	// a list to be returned.
-	scene.animators.push_back(std::move(animBoat));
-	scene.animators.push_back(std::move(animTiger));
-
-	// Transfer ownership of the objects and animators back to the main.
-	return scene;
-}
-
 Scene Casino() {
-	Scene scene{ texturingShader()
+	Scene scene{ phongLightingShader()
 	};
 	std::vector<Texture> floorTextures = {
 		loadTexture("models/carpet.jpeg", "baseTexture"),
 	};
+	// the floor of my scene
 	auto floorMesh = Mesh3D::square(floorTextures);
 	auto floor = Object3D(std::vector<Mesh3D>{floorMesh});
 	floor.grow(glm::vec3(10, 10, 10));
 	floor.move(glm::vec3(0, 0, 0));
 	floor.rotate(glm::vec3(-M_PI / 2, 0, 0));
-	// 0
 	scene.objects.push_back(std::move(floor));
+
 	// pool table
 	auto poolTable = assimpLoad("models/pool_table/scene.gltf", true);
 	poolTable.grow(glm::vec3(0.002));
 	poolTable.rotate(glm::vec3(0, -M_PI/2, 0));
 	poolTable.move(glm::vec3(-2, .3, -3));
-
-	// 1
 	scene.objects.push_back(std::move(poolTable));
 
-	// table
+	// the table where the dice fall onto
 	auto table = assimpLoad("models/poker_table/scene.gltf", true);
 	table.setScale(glm::vec3(.001));
 	table.setPosition(glm::vec3(0, 0, 0));
-	// 2
 	scene.objects.push_back(std::move(table));
 
-	// cards and chips
+	// casino chips
 	auto casinoChips = assimpLoad("models/casino_chips/scene.gltf", true);
 	casinoChips.setScale(glm::vec3(1));
 	casinoChips.setPosition(glm::vec3(.4, .6, 0));
-	// 3
 	scene.objects.push_back(std::move(casinoChips));
 
-	// animated slot (ugly)
+	// slot machine (i wish i found a better looking one :c)
 	auto slots2 = assimpLoad("models/slotmachine3/scene.gltf", true);
 	slots2.setScale(glm::vec3(2));
 	slots2.setPosition(glm::vec3(0, 0.8, -4));
 	slots2.rotate(glm::vec3(0, -M_PI/2, 0));
+	scene.objects.push_back(std::move(slots2));
+
+	// animation for my hierarchical slot machine
 	Animator animLever;
 	Animator animLeverUp;
 	Animator animWheel1;
 	Animator animWheel2;
 	Animator animWheel3;
-	// 4
-	scene.objects.push_back(std::move(slots2));
 	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animLever.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), 1, glm::vec3(0, 0, .5*(-2*M_PI))));
 	animLever.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(1).getChild(0), .5));
@@ -242,7 +134,7 @@ Scene Casino() {
 	animWheel3.addAnimation(std::make_unique<PauseAnimation>(scene.objects[4], 1.5));
 	animWheel3.addAnimation(std::make_unique<RotationAnimation>(scene.objects[4].getChild(0).getChild(0).getChild(4).getChild(0), 7, glm::vec3(0, -2*M_PI, 0)));
 
-	// cube
+	// die #1
 	auto cube = assimpLoad("models/dice/scene.gltf", true);
 	cube.setScale(glm::vec3(.05));
 	cube.move(glm::vec3(0, 2, 0));
@@ -251,10 +143,9 @@ Scene Casino() {
 	cube.setAngularVelocity(glm::vec3(8, 5, 2));
 	cube.setBounceCoeff(0.5);
 	cube.isMoving = true;
-	// 5
 	scene.objects.push_back(std::move(cube));
 
-	// second cube
+	// die #2
 	auto cube2 = assimpLoad("models/dice/scene.gltf", true);
 	cube2.setScale(glm::vec3(.05));
 	cube2.move(glm::vec3(-.5, 2, 0));
@@ -263,23 +154,13 @@ Scene Casino() {
 	cube2.setAngularVelocity(glm::vec3(12, 1, 5));
 	cube2.setBounceCoeff(0.5);
 	cube2.isMoving = true;
-	// 6
 	scene.objects.push_back(std::move(cube2));
 
 	// letter g
 	auto letterG = assimpLoad("models/g_letter/scene.gltf", true);
 	letterG.setScale(glm::vec3(.5));
 	letterG.move(glm::vec3(-.5, 2, 3));
-	// 7
 	scene.objects.push_back(std::move(letterG));
-
-	glm::vec3 p0 = glm::vec3(-.5, 2, 3);
-	glm::vec3 p1 = glm::vec3(0, .5, 0);
-	glm::vec3 p2 = glm::vec3(1, 0, 0);
-	glm::vec3 p3_g = glm::vec3(-.5, 2, 0);
-	glm::vec3 p3_a = glm::vec3(-.2, 2, 0);
-	glm::vec3 p3_t = glm::vec3(0.1, 2, 0);
-	glm::vec3 p3_o = glm::vec3(.4, 2, 0);
 
 	//letter a
 	auto letterA = assimpLoad("models/a_letter/scene.gltf", true);
@@ -315,6 +196,7 @@ Scene Casino() {
 	auto pokerTable2 = assimpLoad("models/poker_table2/scene.gltf", true);
 	pokerTable2.grow(glm::vec3(1));
 	pokerTable2.move(glm::vec3(3, -1.5, 0));
+	pokerTable2.isMoving = false;
 	scene.objects.push_back(std::move(pokerTable2));
 
 	// bar
@@ -324,21 +206,26 @@ Scene Casino() {
 	bar.isMoving = false;
 	scene.objects.push_back(std::move(bar));
 
-	// left wall
+	// textures for my walls and ceiling
 	std::vector<Texture> WallTextures = {
 		loadTexture("models/casino_left.jpg", "baseTexture"),
 	};
 	std::vector<Texture> WallTextures2 = {
 		loadTexture("models/whitewall.jpg", "baseTexture"),
 	};
+	std::vector<Texture> ceilingTextures = {
+		loadTexture("models/popcorn_ceiling.jpg", "baseTexture"),
+	};
+
+	// left wall
 	auto leftWallMesh = Mesh3D::square(WallTextures);
 	auto leftWall = Object3D(std::vector<Mesh3D>{leftWallMesh});
 	leftWall.grow(glm::vec3(10, 10, 10));
 	leftWall.move(glm::vec3(-5, 4.5, 0));
 	leftWall.rotate(glm::vec3(0, M_PI/2, 0));
-	// 0
 	scene.objects.push_back(std::move(leftWall));
 
+	// right wall
 	auto rightWallMesh = Mesh3D::square(WallTextures);
 	auto rightWall = Object3D(std::vector<Mesh3D>{rightWallMesh});
 	rightWall.grow(glm::vec3(10, 10, 10));
@@ -347,31 +234,37 @@ Scene Casino() {
 	scene.objects.push_back(std::move(rightWall));
 
 	// front wall
-	auto backWallMesh = Mesh3D::square(WallTextures2);
-	auto backWall = Object3D(std::vector<Mesh3D>{backWallMesh});
-	backWall.grow(glm::vec3(10, 10.8, 10));
-	backWall.move(glm::vec3(0, 4.4, -5));
-	backWall.rotate(glm::vec3(0, 0, 0));
-	scene.objects.push_back(std::move(backWall));
-
-	// back wall
 	auto frontWallMesh = Mesh3D::square(WallTextures2);
 	auto frontWall = Object3D(std::vector<Mesh3D>{frontWallMesh});
 	frontWall.grow(glm::vec3(10, 10.8, 10));
-	frontWall.move(glm::vec3(0, 4.4, 5));
-	frontWall.rotate(glm::vec3(0, M_PI, 0));
+	frontWall.move(glm::vec3(0, 4.4, -5));
+	frontWall.rotate(glm::vec3(0, 0, 0));
 	scene.objects.push_back(std::move(frontWall));
 
-	std::vector<Texture> ceilingTextures = {
-		loadTexture("models/roof.jpg", "baseTexture"),
-	};
+	// back wall
+	auto backWallMesh = Mesh3D::square(WallTextures2);
+	auto backWall = Object3D(std::vector<Mesh3D>{backWallMesh});
+	backWall.grow(glm::vec3(10, 10.8, 10));
+	backWall.move(glm::vec3(0, 4.4, 5));
+	backWall.rotate(glm::vec3(0, M_PI, 0));
+	scene.objects.push_back(std::move(backWall));
+
+	// ceiling
 	auto ceilingMesh = Mesh3D::square(ceilingTextures);
 	auto ceiling = Object3D(std::vector<Mesh3D>{ceilingMesh});
 	ceiling.grow(glm::vec3(10, 10, 10));
 	ceiling.move(glm::vec3(0, 5, 0));
 	ceiling.rotate(glm::vec3(-M_PI / 2, 0, M_PI));
-	// 0
 	scene.objects.push_back(std::move(ceiling));
+
+	// animation for my letters
+	glm::vec3 p0 = glm::vec3(-.5, 2, 3);
+	glm::vec3 p1 = glm::vec3(0, .5, 0);
+	glm::vec3 p2 = glm::vec3(1, 0, 0);
+	glm::vec3 p3_g = glm::vec3(-.5, 2, 0);
+	glm::vec3 p3_a = glm::vec3(-.2, 2, 0);
+	glm::vec3 p3_t = glm::vec3(0.1, 2, 0);
+	glm::vec3 p3_o = glm::vec3(.4, 2, 0);
 
 	Animator animName;
 	animName.addAnimation(std::make_unique<PauseAnimation>(scene.objects[7], 7));
@@ -393,6 +286,10 @@ void snapToNearestRotation(Object3D& dice) {
 
 	// Convert to degrees and snap to nearest 90 degrees
 	rot = glm::degrees(rot);
+
+	// basically makes it so its increments of 90 degrees
+	// ex: if our dice is at 45 degrees then 45/90=0.5
+	// round(0.5) = 1 -> 1 * 90 = 90 degrees
 	rot.x = round(rot.x / 90) * 90;
 	rot.y = round(rot.y / 90) * 90;
 	rot.z = round(rot.z / 90) * 90;
@@ -413,6 +310,7 @@ int main() {
 	sf::Window window(sf::VideoMode{ 1200, 800 }, "Modern OpenGL", sf::Style::Resize | sf::Style::Close, settings);
 
 	gladLoadGL();
+	// learnopenGL only the front faces are rendered with culling
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);
@@ -420,8 +318,11 @@ int main() {
 
 	// Inintialize scene objects.
 	auto myScene = Casino();
+
 	// Activate the shader program.
 	myScene.program.activate();
+
+	// load sound files into bufffer using SFML audio library (googled documentation)
 	sf::SoundBuffer diceBuffer, soundBuffer, winBuffer;
 	if (!diceBuffer.loadFromFile("sounds/dice.flac") || !soundBuffer.loadFromFile("sounds/coin-inserting.wav")
 		|| !winBuffer.loadFromFile("sounds/win.wav")) {
@@ -431,6 +332,7 @@ int main() {
 	diceSound.setBuffer(diceBuffer);
 	coinSound.setBuffer(soundBuffer);
 	winSound.setBuffer(winBuffer);
+
 	// Ready, set, go!
 	bool running = true;
 	sf::Clock c;
@@ -440,10 +342,12 @@ int main() {
 	for (auto& anim : myScene.animators) {
 		anim.start();
 	}
+
 	// booleans for keyboard input
 	bool throwDice = false;
 	bool startAnimation = false;
-	// camera view (from lecture)
+
+	// camera view (from lecture) we can create the camera outside the while loop so we dont have to compute everytime unless we move around
 	glm::vec3 cameraPos = glm::vec3(0, 1.3, 2);
 	glm::vec3 cameraDir = glm::vec3(0, 0, -1);
 	glm::mat4 camera = glm::lookAt(cameraPos, cameraPos + cameraDir, glm::vec3(0, 1, 0));
@@ -494,20 +398,32 @@ int main() {
 		}
 		auto now = c.getElapsedTime();
 		auto diff = now - last;
-		// std::cout << now.asSeconds() << std::endl;
-
-		// std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
+		std::cout << 1 / diff.asSeconds() << " FPS " << std::endl;
 		last = now;
+
+		// using our fps we can set a smoother camera speed
 		cameraSpeed = 100.0f * diff.asSeconds();
 
 		myScene.program.setUniform("view", camera);
 		myScene.program.setUniform("projection", perspective);
 		myScene.program.setUniform("cameraPos", cameraPos);
+
+		//  ambient, diffuse, specular, shininess
+		myScene.program.setUniform("material", glm::vec4(.6,.5,.5,0));
+		// ambient color (going for like a yellowish color)
+		myScene.program.setUniform("ambientColor", glm::vec3(.8,.8,.5));
+		// light direction that points downward
+		myScene.program.setUniform("directionalLight", glm::vec3(0,-1,0));
+		// color of directional light softer yellow
+		myScene.program.setUniform("directionalColor", glm::vec3(.4,.4,.2));
+
+		// when the user click return start the animations
 		if (startAnimation) {
 			for (auto& anim : myScene.animators) {
 				anim.tick(diff.asSeconds());
+				// wasn't sure how to access currentTime() so i just used a counter
 				animationTimeElapsed += .1;
-				std::cout << animationTimeElapsed << std::endl;
+				// after 7s of when the animation started play the win sound
 				if (animationTimeElapsed > 2800 && winSoundActive) {
 					winSound.play();
 					winSoundActive = false;
@@ -538,11 +454,15 @@ int main() {
 
 					dice.setPosition(pos);
 					dice.setVelocity(vel);
+					// square root x,y,x components in velocity to get magnitude
 					if (glm::length(vel) < 0.1f) {
 						dice.setVelocity(glm::vec3(0.0f));
 						auto rotVel = dice.getAngularVelocity();
 						dice.setAngularVelocity(rotVel * 0.9f);
+						// square root x,y,z in angular velocity to get magnitude
 						if (glm::length(rotVel) < 0.1f) {
+
+							// snap the dice to the nearest 90 degrees
 							snapToNearestRotation(dice);
 							dice.isMoving = false; // set to false so my program runs faster i think?
 						}
@@ -556,6 +476,7 @@ int main() {
 		// Render the scene objects.
 		for (auto& o : myScene.objects) {
 			o.render(myScene.program);
+
 		}
 		window.display();
 	}
